@@ -17,6 +17,9 @@ Steps in STM32CubeMX:
 1. Create a new project by using STM32CubeMX.  
 2. Choose board by selecting Board Selector. (We are using NUCLEO-F446RE here)  
 3. Verify pinout and initialize the I2C bus.  
+[I2C config](https://your-copied-image-address)
+[USART config](https://your-copied-image-address)
+
 4. Copy all used libraries into the project folder.  
 5. Select on Generate Code after all the configurations have been done.  
 
@@ -27,24 +30,47 @@ Steps in STM32CubeIDE:
 #include "mpu6050.h"
 ```
 3. To initialize MPU6050, these code needed to be add into main.c (Use HAL_Delay to set the delay)  
-4. Edit main.c to decide the output configuration (We are using serial monitor here)
+4. Edit main.c to decide the output configuration (We are using serial monitor here to show both raw value and filtered angle)
 ```
- /* USER CODE END WHILE */
+     /* USER CODE END WHILE */
 	  MPU6050_Read_All(&hi2c1, &MPU6050);
-	  double angle_x = MPU6050.Ax;
-	  double angle_y = MPU6050.Ay;
-	  double angle_z = MPU6050.Az;
+	  double angle_x = MPU6050.KalmanAngleX;
+	  double angle_y = MPU6050.KalmanAngleY;
+
+	  //double angle_z = MPU6050.Az;
+	  double accel_x_raw = MPU6050.Ax;
+	  double accel_y_raw = MPU6050.Ay;
+	  double accel_z_raw = MPU6050.Az;
+
+	  double gyro_x_raw = MPU6050.Gx;
+	  double gyro_y_raw = MPU6050.Gy;
+	  double gyro_z_raw = MPU6050.Gz;
 
 	  HAL_UART_Transmit(&huart2, (uint8_t *)datax, sprintf(datax,
-	  		                "Angle values\n- X:%3.4f\n- Y:%3.4f\n- Z:%3.4f\nTemperature\n- %3.4f\n\n\n",
-	                      angle_x ,
+	  		                "\nAccel values\n- Accel_X_raw:%3.4f\n- Accel_Y_raw:%3.4f\n- Accel_Z_raw:%3.4f\n\n\n",
+						  accel_x_raw ,
+	                      accel_y_raw ,
+	                      accel_z_raw
+	                ), 1000);
+
+	  HAL_UART_Transmit(&huart2, (uint8_t *)datax, sprintf(datax,
+	  		                "\nGyro values\n- Gyro_X_raw:%3.4f\n- Gyro_Y_raw:%3.4f\n- Gyro_Z_raw:%3.4f\n\n\n",
+						  gyro_x_raw ,
+	                      gyro_y_raw ,
+	                      gyro_z_raw
+	                ), 1000);
+
+	  HAL_UART_Transmit(&huart2, (uint8_t *)datax, sprintf(datax,
+	  		                "\nAngle values\n- X:%3.4f\n- Y:%3.4f\n- Temperature\n- %3.4f\n\n\n",
+						  angle_x ,
 	                      angle_y ,
-	                      angle_z,
 	                      MPU6050.Temperature
 	                ), 1000);
-	  HAL_Delay(5000);
+	  HAL_Delay(3000);
     /* USER CODE BEGIN 3 */
- /* USER CODE END WHILE */
+  }
+  /* USER CODE END 3 */
+}
 ```
 5. Functions built so data from MPU6050 can be obtained (Accelerometer, gyrometer, temperature sensor)
  ```
@@ -58,8 +84,9 @@ void MPU6050_Read_Temp(I2C_HandleTypeDef *I2Cx, MPU6050_t *DataStruct)
 ```
 7. Data read from the MPU6050 and processed by Kalman filter will be available through the MPU6050 structure.
 ```
+    return Kalman->angle
 ```
-8. Noted 0x68 will be returned by the sensor if everything goes well
+8. Noted 0x68 will be returned by the sensor if everything goes well (this value is get according to data sheet for MPU6050)
 ```
 // check device ID WHO_AM_I
 
