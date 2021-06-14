@@ -17,8 +17,8 @@ Steps in STM32CubeMX:
 1. Create a new project by using STM32CubeMX.  
 2. Choose board by selecting Board Selector. (We are using NUCLEO-F446RE here)  
 3. Verify pinout and initialize the I2C bus.  
-[I2C config](https://your-copied-image-address)
-[USART config](https://your-copied-image-address)
+[I2C config](https://github.com/waikin-ng/MKEL1123_Project_Milestone_5/blob/main/i2c.PNG?raw=true)
+[USART config](https://github.com/waikin-ng/MKEL1123_Project_Milestone_5/blob/main/usart.PNG?raw=true)
 
 4. Copy all used libraries into the project folder.  
 5. Select on Generate Code after all the configurations have been done.  
